@@ -148,7 +148,7 @@ class Human:
                 print("I will clean my home")
                 self.clean_home()
             else:
-                print("Let's chil")
+                print("Let's chill")
                 self.chill()
         elif self.money < 0:
             print("Start working")
