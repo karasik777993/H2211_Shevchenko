@@ -14,13 +14,34 @@ brand_of_car = {
     "Lexus": {"fuel": 80, "strength": 120, "consumption": 14}
 
 }
+
+
+# ---------------- TASK 1 ----------------
+# New class
+class Pet:
+    def __init__(self, name):
+        self.name = name
+        self.happiness = 50
+        self.hunger = 50
+
+    def play(self):
+        self.happiness += 10
+        self.hunger -= 5
+        print(f"Playing with pet {self.name}")
+
+    def feed(self):
+        self.hunger += 10
+        print(f"Feeding pet {self.name}")
+
+
 class Human:
 
-    def __init__(self, name="Human", car=None,  home=None, job=None):
+    def __init__(self, name="Human", car=None, home=None, job=None, pet=None):
         self.name = name
         self.car = car
         self.home = home
         self.job = job
+        self.pet = pet
         self.money = 100
         self.gladness = 50
         self.satiety = 50
@@ -39,6 +60,18 @@ class Human:
             return
         self.job = Job(job_list)
 
+    # communication with new class
+    def get_pet(self):
+        self.pet = Pet("Bobik")
+        print(f"I got a pet {self.pet.name}")
+
+    def play_with_pet(self):
+        self.pet.play()
+        self.gladness += 5
+
+    def feed_pet(self):
+        self.pet.feed()
+
     def eat(self):
         if self.home.food <= 0:
             self.shopping("food")
@@ -48,6 +81,7 @@ class Human:
                 return
             self.satiety += 5
             self.home.food -= 5
+
     def work(self):
         if self.car.drive():
             pass
@@ -61,6 +95,7 @@ class Human:
         self.money += self.job.salary
         self.gladness -= self.job.gladness_less
         self.satiety -= 4
+
     def shopping(self, manage):
         if self.car.drive():
             pass
@@ -71,19 +106,22 @@ class Human:
             else:
                 self.to_repair()
                 return
+
         if manage == "fuel":
             print("I bought fuel")
             self.money -= 100
             self.car.fuel += 100
+
         elif manage == "food":
             print("I bought food")
             self.money -= 50
             self.home.food += 50
+
         elif manage == "delicacies":
-                print("Hooray Delicacies")
-                self.gladness += 10
-                self.satiety += 2
-                self.money -= 15
+            print("Hooray Delicacies")
+            self.gladness += 10
+            self.satiety += 2
+            self.money -= 15
 
     def chill(self):
         self.gladness += 10
@@ -94,55 +132,77 @@ class Human:
         self.home.mess = 0
 
     def to_repair(self):
-        self.car.stenght += 100
+        self.car.strength += 100
         self.money -= 50
 
     def days_indexes(self, day):
         day = f"Today the {day} of {self.name}'s life"
         print(f"{day:=^50}", "\n")
-        human_indexes = self.name+"'s indexes"
+
+        human_indexes = self.name + "'s indexes"
         print(f"{human_indexes:-^50}", "\n")
+
         print(f"Money - {self.money}")
         print(f"Satiety - {self.satiety}")
         print(f"Gladness - {self.gladness}")
-        home_indexes = self.name + "'s indexes"
+
+        home_indexes = self.name + "'s home"
         print(f"{home_indexes:-^50}", "\n")
+
         print(f"Food - {self.home.food}")
         print(f"Mess - {self.home.mess}")
+
         car_indexes = f"{self.car.brand} car indexes"
         print(f"{car_indexes:-^50}", "\n")
+
         print(f"Fuel - {self.car.fuel}")
         print(f"Strength - {self.car.strength}")
 
-
-
+        if self.pet:
+            pet_indexes = f"{self.pet.name} indexes"
+            print(f"{pet_indexes:-^50}", "\n")
+            print(f"Happiness - {self.pet.happiness}")
+            print(f"Hunger - {self.pet.hunger}")
 
     def is_alive(self):
         if self.gladness < 0:
             print("Depresion...")
             return False
+
         if self.satiety < 0:
             print("Dead...")
             return False
+
         if self.money < -500:
             print("Bankrupt...")
             return False
+
     def live(self, day):
         if self.is_alive() == False:
             return False
+
         if self.home is None:
             self.get_home()
+
         if self.car is None:
             self.get_car()
             print(f"I bought a car {self.car.brand}")
+
         if self.job is None:
             self.get_job()
             print(f"I get a job {self.job.job} with salary {self.job.salary}")
+
+        if self.pet is None:
+            self.get_pet()
+
         self.days_indexes(day)
-        dice = random.randint(1, 4)
+
+        dice = random.randint(1, 6)
+
         if self.satiety < 20:
             print("I will go eat")
             self.eat()
+
         elif self.gladness < 20:
             if self.home.mess > 15:
                 print("I will clean my home")
@@ -150,20 +210,32 @@ class Human:
             else:
                 print("Let's chill")
                 self.chill()
+
         elif self.money < 0:
             print("Start working")
             self.work()
+
         elif self.car.strength < 15:
             print("I will repair my car")
             self.to_repair()
+
         elif dice == 1:
             self.chill()
+
         elif dice == 2:
             self.work()
+
         elif dice == 3:
             self.clean_home()
+
         elif dice == 4:
             self.shopping(manage="delicacies")
+
+        elif dice == 5:
+            self.play_with_pet()
+
+        elif dice == 6:
+            self.feed_pet()
 
 
 class Auto:
@@ -182,10 +254,12 @@ class Auto:
             print("Can not move")
             return False
 
+
 class Home:
     def __init__(self):
         self.mess = 0
         self.food = 0
+
 
 class Job:
     def __init__(self, job_list):
@@ -194,7 +268,48 @@ class Job:
         self.gladness_less = job_list[self.job]["gladness_less"]
 
 
+# ---------------- TASK 2 ----------------
+# Multiple inheritance
+
+
+class Skills:
+    def __init__(self):
+        self.programming = 80
+
+    def code(self):
+        print("Writing code...")
+
+
+class Sport:
+    def __init__(self):
+        self.energy = 100
+
+    def train(self):
+        print("Training in gym...")
+
+
+class SuperHuman(Skills, Sport):
+    def __init__(self, name):
+        Skills.__init__(self)
+        Sport.__init__(self)
+        self.name = name
+
+    def show_info(self):
+        print(f"{self.name}")
+        print(f"Programming skill: {self.programming}")
+        print(f"Energy: {self.energy}")
+
+
 persona = Human(name="Vasya")
+
 for day in range(1, 8):
     if persona.live(day) == False:
         break
+
+
+print("MULTIPLE INHERITANCE DEMO")
+
+hero = SuperHuman("Alex")
+hero.show_info()
+hero.code()
+hero.train()
