@@ -1,4 +1,97 @@
 import random
+import tkinter as tk
+
+
+root = tk.Tk()
+root.title("Simulator")
+root.geometry("500x500")
+root.resizable(False, False)
+root.attributes("-fullscreen", True)
+root.bind("<Escape>", lambda e: root.destroy())
+root.configure(bg="#1677d9")
+
+persona = None
+
+
+def start_game():
+    global persona
+    
+    persona = Human(name="Vasya")
+
+    toggle_scrin()
+
+    print("MULTIPLE INHERITANCE DEMO")
+
+    hero = SuperHuman("Alex")
+    hero.show_info()
+    hero.code()
+    hero.train()
+
+
+
+
+play_button = tk.Button(
+    root,
+    text="PLAY",
+    font=("Arial", 30, "bold"),
+    width=10,
+    height=2,
+    command=start_game
+)
+
+
+
+def toggle_scrin():
+    root.withdraw()
+    main_scrin = tk.Toplevel()
+    main_scrin.attributes("-fullscreen", True)
+    main_scrin.config(bg='#9078bf')
+    main_scrin.bind("<Escape>", lambda e: main_scrin.destroy())
+
+    def work_action():
+        global persona
+        persona.work()
+
+    def eat_action():
+        global persona
+        persona.eat()
+
+    def chill_action():
+        global persona
+        persona.chill()
+
+    def clean_action():
+        global persona
+        persona.clean_home()
+
+    def pet_action():
+        global persona
+        persona.play_with_pet()
+
+    tk.Button(main_scrin, text="Work", bg="#1677d9",
+              font=("Arial", 20, "bold"),
+              width=20, height=3, command=work_action).place(relx=0.1, rely=0.95, anchor="s")
+
+    tk.Button(main_scrin, text="Eat", bg="#1677d9",
+              font=("Arial", 20, "bold"),
+              width=20, height=3, command=eat_action).place(relx=0.3, rely=0.95, anchor="s")
+
+    tk.Button(main_scrin, text="Chill", bg="#1677d9",
+              font=("Arial", 20, "bold"),
+              width=20, height=3, command=chill_action).place(relx=0.5, rely=0.95, anchor="s")
+
+    tk.Button(main_scrin, text="Clean", bg="#1677d9",
+              font=("Arial", 20, "bold"),
+              width=20, height=3, command=clean_action).place(relx=0.7, rely=0.95, anchor="s")
+
+    tk.Button(main_scrin, text="Pet", bg="#1677d9",
+              font=("Arial", 20, "bold"),
+              width=20, height=3, command=pet_action).place(relx=0.9, rely=0.95, anchor="s")
+
+    tk.Label(
+        main_scrin,
+        text=f"Money: {persona.money}",bg="#9078bf",fg="white", font=("Arial", 20, "bold")).place(relx=0.7, rely=0.10, anchor="center")
+
 
 job_list = {
     "Java developer": {"salary": 50, "gladness_less": 10},
@@ -16,13 +109,32 @@ brand_of_car = {
 }
 
 
+# ---------------- TASK 1 ----------------
+# New class
+class Pet:
+    def __init__(self, name):
+        self.name = name
+        self.happiness = 50
+        self.hunger = 50
+
+    def play(self):
+        self.happiness += 10
+        self.hunger -= 5
+        print(f"Playing with pet {self.name}")
+
+    def feed(self):
+        self.hunger += 10
+        print(f"Feeding pet {self.name}")
+
+
 class Human:
 
-    def __init__(self, name="Human", car=None, home=None, job=None):
+    def __init__(self, name="Human", car=None, home=None, job=None, pet=None):
         self.name = name
         self.car = car
         self.home = home
         self.job = job
+        self.pet = pet
         self.money = 100
         self.gladness = 50
         self.satiety = 50
@@ -40,6 +152,18 @@ class Human:
             self.to_repair()
             return
         self.job = Job(job_list)
+
+    # communication with new class
+    def get_pet(self):
+        self.pet = Pet("Bobik")
+        print(f"I got a pet {self.pet.name}")
+
+    def play_with_pet(self):
+        self.pet.play()
+        self.gladness += 5
+
+    def feed_pet(self):
+        self.pet.feed()
 
     def eat(self):
         if self.home.food <= 0:
@@ -61,7 +185,6 @@ class Human:
             else:
                 self.to_repair()
                 return
-
         self.money += self.job.salary
         self.gladness -= self.job.gladness_less
         self.satiety -= 4
@@ -128,6 +251,12 @@ class Human:
         print(f"Fuel - {self.car.fuel}")
         print(f"Strength - {self.car.strength}")
 
+        if self.pet:
+            pet_indexes = f"{self.pet.name} indexes"
+            print(f"{pet_indexes:-^50}", "\n")
+            print(f"Happiness - {self.pet.happiness}")
+            print(f"Hunger - {self.pet.hunger}")
+
     def is_alive(self):
         if self.gladness < 0:
             print("Depresion...")
@@ -156,9 +285,12 @@ class Human:
             self.get_job()
             print(f"I get a job {self.job.job} with salary {self.job.salary}")
 
+        if self.pet is None:
+            self.get_pet()
+
         self.days_indexes(day)
 
-        dice = random.randint(1, 4)
+        dice = random.randint(1, 6)
 
         if self.satiety < 20:
             print("I will go eat")
@@ -192,6 +324,12 @@ class Human:
         elif dice == 4:
             self.shopping(manage="delicacies")
 
+        elif dice == 5:
+            self.play_with_pet()
+
+        elif dice == 6:
+            self.feed_pet()
+
 
 class Auto:
     def __init__(self, brand_list):
@@ -223,8 +361,38 @@ class Job:
         self.gladness_less = job_list[self.job]["gladness_less"]
 
 
-persona = Human(name="Vasya")
+# ---------------- TASK 2 ----------------
+# Multiple inheritance
 
-for day in range(1, 8):
-    if persona.live(day) == False:
-        break
+
+class Skills:
+    def __init__(self):
+        self.programming = 80
+
+    def code(self):
+        print("Writing code...")
+
+
+class Sport:
+    def __init__(self):
+        self.energy = 100
+
+    def train(self):
+        print("Training in gym...")
+
+
+class SuperHuman(Skills, Sport):
+    def __init__(self, name):
+        Skills.__init__(self)
+        Sport.__init__(self)
+        self.name = name
+
+    def show_info(self):
+        print(f"{self.name}")
+        print(f"Programming skill: {self.programming}")
+        print(f"Energy: {self.energy}")
+
+
+
+play_button.pack(expand=True)
+root.mainloop()
